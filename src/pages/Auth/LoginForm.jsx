@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import AuthLayout from "../../components/Layouts/AuthLayout";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/Inputs/Input";
@@ -15,6 +15,12 @@ const LoginForm = () => {
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
 
+  // Reuse the same validation as SignUp
+  const isValidPassword = (pwd) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+    return regex.test(pwd);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -24,7 +30,14 @@ const LoginForm = () => {
     }
 
     if (!password) {
-      setError("Please enter the password");
+      setError("Please enter the password.");
+      return;
+    }
+
+    if (!isValidPassword(password)) {
+      setError(
+        "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one special character."
+      );
       return;
     }
 
@@ -72,7 +85,7 @@ const LoginForm = () => {
             value={password}
             onChange={({ target }) => setPassword(target.value)}
             label="Password"
-            placeholder="No min characters required"
+            placeholder="Min 8 characters, 1 uppercase, 1 lowercase & 1 special char"
             type="password"
           />
 
