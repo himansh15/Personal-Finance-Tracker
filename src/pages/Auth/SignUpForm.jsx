@@ -20,7 +20,12 @@ const SignUpForm = () => {
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  // Handle Sign Up Form Submit
+  // Regex for validating password
+  const isValidPassword = (pwd) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+    return regex.test(pwd);
+  };
+
   const handleSignUp = async (e) => {
     e.preventDefault();
 
@@ -41,11 +46,16 @@ const SignUpForm = () => {
       return;
     }
 
+    if (!isValidPassword(password)) {
+      setError(
+        "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one special character."
+      );
+      return;
+    }
+
     setError("");
 
-    // SignUp API Call
     try {
-      // Upload image if present
       if (profilePic) {
         const imgUploadRes = await uploadImage(profilePic);
         profileImageUrl = imgUploadRes.imageUrl || "";
@@ -107,7 +117,7 @@ const SignUpForm = () => {
                 value={password}
                 onChange={({ target }) => setPassword(target.value)}
                 label="Password"
-                placeholder="No min characters required"
+                placeholder="Min 8 characters, 1 uppercase, 1 lowercase & 1 special char"
                 type="password"
               />
             </div>
